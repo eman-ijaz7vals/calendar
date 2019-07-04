@@ -5,7 +5,7 @@ class Events
     @detail = detail
   end
 
-  def printDetails
+  def print_details
     puts "Details :\n#{detail} "
   end
 end

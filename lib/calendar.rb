@@ -67,11 +67,10 @@ class Calendar
   def print_month_view(month, year)
     months_arr = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
     month = months_arr[month.to_i - 1]
-    # week_day = 1
     events_size_arr = []
     first_date, _first_events_arr = @cal[year][month].first
     week_day = Date.parse(first_date).wday
-    @cal[year][months_arr[month.to_i - 1]].each do |_date, events|
+    @cal[year][month].each do |_date, events|
       events_size_arr.push(events.length)
     end
     puts 'S        M        T        W        T        F        S'
@@ -115,7 +114,7 @@ class Calendar
     month, day, year = parse_date(date)
     events = @cal[year][month][year + '-' + month + '-' + day]
     events.each_with_index do |event, _index|
-      puts event.printDetails
+      puts event.print_details
     end
     'All events of given date are printed successfully!'
   end
@@ -126,7 +125,7 @@ class Calendar
     month_events = @cal[year][months_arr[month.to_i - 1]]
     month_events.each do |_date, events_arr|
       events_arr.each_with_index do |event, _index|
-        puts event.printDetails
+        puts event.print_details
       end
     end
     'All events of given month are printed successfully!'

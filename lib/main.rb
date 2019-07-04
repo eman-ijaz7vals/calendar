@@ -5,27 +5,24 @@ require 'date'
 date = Date.today
 date1 = date.next
 date2 = date1.next
-date3 = date2.next
-date4 = date3.next
-date5 = date4.next
 
-e1 = Events.new('event1 description im a here')
-e2 = Events.new('event2 description im a here')
-e3 = Events.new('event3 description im a here')
-e4 = Events.new('event4 description im a here')
-
+e1 = Events.new('event1 description here')
+e2 = Events.new('event2 description here')
+e3 = Events.new('event3 description here')
+e4 = Events.new('event4 description here')
+e5 = Events.new('event5 description here')
 c = Calendar.new
 c.add_event(date, e1)
 c.add_event(date, e2)
 c.add_event(date, e3)
-c.add_event(date2, e4)
-
+c.add_event(date1, e4)
+c.add_event(date2, e5)
 loop do
   puts "\n\n\n        **** MENU ****        "
   puts '1. Add event'
   puts '2. Remove event'
   puts '3. Edit event'
-  puts '4. Print the month view (in a calendar style) which will show the number of events on each date.'
+  puts '4. Print the month view'
   puts '5. Print the details of events on a specific date'
   puts '6. View the details of all the events of a month'
 
