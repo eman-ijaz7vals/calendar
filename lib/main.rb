@@ -6,17 +6,19 @@ date = Date.today
 date1 = date.next
 date2 = date1.next
 
-e1 = Events.new('event1 description here')
-e2 = Events.new('event2 description here')
-e3 = Events.new('event3 description here')
-e4 = Events.new('event4 description here')
-e5 = Events.new('event5 description here')
+# e1 = Events.new('event1 description here')
+# e2 = Events.new('event2 description here')
+# e3 = Events.new('event3 description here')
+# e4 = Events.new('event4 description here')
+# e5 = Events.new('event5 description here')
 c = Calendar.new
-c.add_event(date, e1)
-c.add_event(date, e2)
-c.add_event(date, e3)
-c.add_event(date1, e4)
-c.add_event(date2, e5)
+# puts c.add_event(date, e1)
+# puts c.add_event(date, e2)
+# puts c.add_event(date, e3)
+# puts c.add_event(date1, e4)
+# puts c.add_event(date2, e5)
+
+# p c 
 loop do
   puts "\n\n\n        **** MENU ****        "
   puts '1. Add event'
@@ -39,8 +41,8 @@ loop do
       retry
     end
     event = Events.new(details)
-    msg = c.add_event(date, event)
-    puts msg
+    c.add_event(date, event)
+   
 
   when '2' ## remove event
     puts 'enter event details to remove: '
@@ -54,8 +56,8 @@ loop do
       retry
     end
     # event = Events.new(details)
-    msg = c.remove_event(date, details)
-    puts msg
+    c.remove_event(date, details)
+    
 
   when '3'
     puts 'enter event details to edit: '
@@ -69,17 +71,17 @@ loop do
       puts 'invalid date entered! Try again!'
       retry
     end
-    msg = c.edit_event(date, old_details, new_details)
-    puts msg
+    c.edit_event(date, old_details, new_details)
+    
 
   when '4'
-    begin
-      puts 'Enter month : '
+
+      puts 'Enter month :'
       month = gets.chomp
       puts 'Enter year : '
       year = gets.chomp
       c.print_month_view(month, year)
-    end
+ 
 
   when '5'
     puts 'Enter date (yyyy-mm-dd) to show its all events : '
@@ -89,16 +91,16 @@ loop do
       puts 'invalid date entered! Try again!'
       retry
     end
-    msg = c.event_details(date)
-    puts msg
+    c.event_details(date)
+    
 
   when '6'
     puts 'Enter month : '
     month = gets.chomp
     puts 'Enter year : '
     year = gets.chomp
-    msg = c.all_month_events_details(month, year)
-    puts msg
+    c.all_month_events_details(month, year)
+    
   else
     break
   end

@@ -16,32 +16,39 @@ describe 'Calendar' do
   c.add_event(date3, e3)
   c.add_event(date3, e4)
 
-  it 'returns Event added successfully message if event is added' do
+  it 'returns true if event is added' do
     e = Events.new('Mothers Day event')
-    expect(c.add_event(date, e)).to eq 'Event added successfully!' 
+    expect(c.add_event(date, e)).to eq true
   end
 
-  it 'returns Event deleted successfully message if event is deleted' do
+  it 'returns false if same event is added again' do
+    e = Events.new('Mothers Day event')
+    expect(c.add_event(date, e)).to eq false
+  end
+
+  it 'returns true if event is deleted' do
     details = 'Mothers Day event'
     date = Date.today
 
-    expect(c.remove_event(date, details)).to eq 'Event deleted successfully!'
+    expect(c.remove_event(date, details)).to eq true
   end
 
-  it 'returns Event edited successfully message if event is edited' do
+  it 'returns false if non existing event is given to delete' do
+    details = 'I am a non existing event'
+    date = Date.today
+
+    expect(c.remove_event(date, details)).to eq false
+  end
+
+  it 'returns true if event is edited' do
     old_details = 'event1 description'
     new_details = 'event1 description edited now!'
-    # date = Date.today
-
-    expect(c.edit_event(date2, old_details, new_details)).to eq 'Event edited successfully!'
+    expect(c.edit_event(date2, old_details, new_details)).to eq true
   end
 
-  it 'returns success message if all events of given date are printed' do
-    expect(c.event_details(Date.parse("2017-7-5"))).to eq 'All events of given date are printed successfully!'
-  end
-
-
-  it 'returns success message if all events of given month are printed' do
-    expect(c.all_month_events_details("07", "2019")).to eq 'All events of given month are printed successfully!' 
+  it 'returns false if non existing event is given to edit' do
+    old_details = 'I am a non existing event'
+    new_details = 'event1 description edited now!'
+    expect(c.edit_event(date2, old_details, new_details)).to eq false
   end
 end

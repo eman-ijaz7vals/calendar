@@ -1,103 +1,106 @@
 require 'date'
 require './events'
-
-# $months_arr = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
 class Calendar
+  attr_accessor :cal
   def initialize
-    years = %w[2013 2014 2015 2016 2017 2018 2019]
-    months = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
-    odd_months = %w[Jan March May July Aug Oct Dec] ## months having 31 days
     @cal = {}
-    years.each do |x| ## years hashes key
-      @cal[x] = {}
-      months.each do |y|
-        @cal[x][y] = {}
-        if y == 'Feb'
-          (0..27).each do |d| ## 28 days
-            date = x + '-' + y + '-' + (d + 1).to_s
-            @cal[x][y][date] = []
-          end
-        elsif odd_months.include?(y)
-          (0..30).each do |d| ## 31 days
-            date = x + '-' + y + '-' + (d + 1).to_s
-            @cal[x][y][date] = []
-          end
-        else
-          (0..29).each do |d| ## 30 days
-            date = x + '-' + y + '-' + (d + 1).to_s
-            @cal[x][y][date] = []
-          end
-        end
-      end
-    end
-    @cal
   end
 
-  def add_event(date, event)
-    month, day, year = parse_date(date) ## return format - > June , 2, 1999
-    @cal[year][month][year + '-' + month + '-' + day].push(event)
-    'Event added successfully!'
+  def add_event(date, new_event)
+    begin
+      year = date.year.to_s
+      month = date.mon.to_s
+      day = date.day.to_s
+      @cal[year] = {} unless @cal.key?(year)
+      @cal[year][month] = {} unless @cal[year].key?(month)
+      @cal[year][month][day] = [] unless @cal[year][month].key?(day)
+
+      event_arr = @cal[year][month][day]
+      event_arr.each do |event|
+        raise 'error' if event.detail == new_event.detail
+      end
+    rescue StandardError
+      puts 'Event with such details already exist! Add new event !'
+      return false
+    end
+    @cal[date.year.to_s][date.mon.to_s][day].push(new_event)
+    puts 'Event added successfully!'
+    true
   end
 
   def remove_event(date, event_details)
-    month, day, year = parse_date(date) ## return format - > June , 2, 1999
-    even_arr = @cal[year][month][year + '-' + month + '-' + day]
-    even_arr.each do |a_event|
-      if a_event.detail == event_details
-        even_arr.delete(a_event)
-        return 'Event deleted successfully!'
+    year = date.year.to_s
+    month = date.mon.to_s
+    day = date.day.to_s
+    begin
+      event_arr = @cal[year][month][day]
+      event_arr.each do |event|
+        if event.detail == event_details
+          event_arr.delete(event)
+          puts 'Event deleted successfully!'
+          return true
+        end
       end
+      raise 'error'
+    rescue StandardError
+      puts 'No such event found'
+      return false
     end
-    'Event not deleted !'
   end
 
   def edit_event(date, old_desc, new_desc)
-    month, day, year = parse_date(date) ## return format - > June , 2, 1999
-    event_arr = @cal[year][month][year + '-' + month + '-' + day]
-    event_arr.each_with_index do |a_event, index|
-      if a_event.detail == old_desc
-        event_arr[index].detail = new_desc
-        return 'Event edited successfully!'
+    year = date.year.to_s
+    month = date.mon.to_s
+    day = date.day.to_s
+    begin
+      event_arr = @cal[year][month][day]
+      event_arr.each_with_index do |event, index|
+        if event.detail == old_desc
+          event_arr[index].detail = new_desc
+          puts 'Event edited!'
+          return true
+        end
       end
+      raise 'error'
+    rescue StandardError
+      puts 'No such event found'
+      return false
     end
-    'Event not edited !'
   end
 
   # print number of events on each date of month // calendar style
   def print_month_view(month, year)
-    months_arr = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
-    month = months_arr[month.to_i - 1]
-    events_size_arr = []
-    first_date, _first_events_arr = @cal[year][month].first
-    week_day = Date.parse(first_date).wday
-    @cal[year][month].each do |_date, events|
-      events_size_arr.push(events.length)
+    begin
+      day, _events_arr = @cal[year][month].first
+      date_str = "#{year}-#{month}-#{day}"
+      date = Date.parse(date_str)
+      week_day = date.wday
+      dates_arr = @cal[year][month].keys ## fetch all days where events exist
+      puts 'S        M        T        W        T        F        S'
+      print print_dates(week_day.to_i, month, dates_arr, year)
+    rescue StandardError
+      puts 'No event found for given month'
+      return false
     end
-    puts 'S        M        T        W        T        F        S'
-    print print_dates(week_day.to_i, month, events_size_arr)
   end
 
-  def print_dates(week_day, month, events_size_arr)
-    months_hash = {'Jan' => 1, 'Feb' => 2, 'March' => 3, 'April' => 4, 'May' => 5, 'June' => 6, 'July' => 7, 'Aug' => 8, 'Sept' => 9, 'Oct' => 10, 'Nov' => 11, 'Dec' => 12}
+  def print_dates(week_day, month, dates_arr, year)
     times = (8 * week_day)
     range = times + week_day
     start_spaces = ''
     range.times { start_spaces += ' ' }
 
     dates = start_spaces
-    if month == 'Feb'
-      total_days = 28
-    else
-      month_num = months_hash[month]
-      total_days = if month_num.even?
-                     30
-                   else
-                     31
-                   end
-    end
-    total_days.times do |i|
-      dates = dates + (i + 1).to_s + '(' + events_size_arr[i].to_s + ')'
-      dates += if (i + 1) >= 10
+    ## return days for specific month
+    total_days = get_days_in_month(month, year)
+    total_days.times do |day|
+      if dates_arr.include?((day + 1).to_s)
+        number_of_events = @cal[year][month][(day + 1).to_s].length.to_s
+        dates = "#{dates}#{(day + 1)}(#{number_of_events})"
+      else
+        dates = "#{dates}#{(day + 1)}   "
+      end
+      dates += if (day + 1) >= 10
                  '    '
                else
                  '     '
@@ -111,32 +114,43 @@ class Calendar
   # User can print the details of events on a specific date.
 
   def event_details(date)
-    month, day, year = parse_date(date)
-    events = @cal[year][month][year + '-' + month + '-' + day]
-    events.each_with_index do |event, _index|
-      puts event.print_details
+    year = date.year.to_s
+    month = date.mon.to_s
+    day = date.day.to_s
+    begin
+      day_events = @cal[year][month][day]
+      day_events.each do |event|
+        puts event.print_details
+      end
+      return true
+    rescue StandardError
+      puts 'No event found for given date'
+      return false
     end
-    'All events of given date are printed successfully!'
   end
 
   # User can view the details of all the events of a month.
   def all_month_events_details(month, year)
-    months_arr = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
-    month_events = @cal[year][months_arr[month.to_i - 1]]
-    month_events.each do |_date, events_arr|
-      events_arr.each_with_index do |event, _index|
-        puts event.print_details
+    begin
+      month_events = @cal[year][month]
+      month_events.each do |_day, days_events|
+        days_events.each do |event|
+          puts event.print_details
+        end
       end
+      return true
+    rescue StandardError
+      puts 'No event found for given month! Error'
+      return false
     end
-    'All events of given month are printed successfully!'
   end
 
-  # returns  month, month date, year
-  def parse_date(date)
-    month = date.mon
-    day = date.mday
-    year = date.year
-    months_arr = %w[Jan Feb March April May June July Aug Sept Oct Nov Dec]
-    [months_arr[month - 1], day.to_s, year.to_s]
+  def get_days_in_month(month, year)
+    month_number = month.to_i
+    return 29 if Date.leap?(year.to_i) && month_number == 2
+    return 28 if month_number == 2
+    return 30 if [4, 6, 9, 11].include?(month_number)
+
+    31
   end
 end
