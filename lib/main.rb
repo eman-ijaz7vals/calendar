@@ -5,20 +5,8 @@ require 'date'
 date = Date.today
 date1 = date.next
 date2 = date1.next
-
-# e1 = Events.new('event1 description here')
-# e2 = Events.new('event2 description here')
-# e3 = Events.new('event3 description here')
-# e4 = Events.new('event4 description here')
-# e5 = Events.new('event5 description here')
 c = Calendar.new
-# puts c.add_event(date, e1)
-# puts c.add_event(date, e2)
-# puts c.add_event(date, e3)
-# puts c.add_event(date1, e4)
-# puts c.add_event(date2, e5)
 
-# p c 
 loop do
   puts "\n\n\n        **** MENU ****        "
   puts '1. Add event'
@@ -35,7 +23,9 @@ loop do
     details = gets.chomp
     puts 'Define date for event (yyyy-mm-dd) : '
     begin
-      date = Date.parse(gets.chomp)
+      date_str = gets.chomp
+      date = Date.parse(date_str)
+      raise ArgumentError unless date_str.match(/\d{4}-\d{1,2}-\d{1,2}/)
     rescue ArgumentError
       puts 'invalid date entered! Try again!'
       retry
@@ -50,12 +40,13 @@ loop do
     puts 'Define date for event (yyyy-mm-dd) : '
 
     begin
-      date = Date.parse(gets.chomp)
+      date_str = gets.chomp
+      date = Date.parse(date_str)
+      raise ArgumentError unless date_str.match(/\d{4}-\d{1,2}-\d{1,2}/)
     rescue ArgumentError
       puts 'invalid date entered! Try again!'
       retry
     end
-    # event = Events.new(details)
     c.remove_event(date, details)
     
 
@@ -66,7 +57,9 @@ loop do
     new_details = gets.chomp
     puts 'Define date for event (yyyy-mm-dd) : '
     begin
-      date = Date.parse(gets.chomp)
+      date_str = gets.chomp
+      date = Date.parse(date_str)
+      raise ArgumentError unless date_str.match(/\d{4}-\d{1,2}-\d{1,2}/)
     rescue ArgumentError
       puts 'invalid date entered! Try again!'
       retry
@@ -86,7 +79,9 @@ loop do
   when '5'
     puts 'Enter date (yyyy-mm-dd) to show its all events : '
     begin
-      date = Date.parse(gets.chomp)
+      date_str = gets.chomp
+      date = Date.parse(date_str)
+      raise ArgumentError unless date_str.match(/\d{4}-\d{1,2}-\d{1,2}/)
     rescue ArgumentError
       puts 'invalid date entered! Try again!'
       retry
